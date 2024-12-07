@@ -36,8 +36,35 @@ services:
       - "25:25"
       - "587:587"
     volumes:
-      - ./smtp/main.cf:/etc/postfix/main.cf:ro
-      - ./smtp/master.cf:/etc/postfix/master.cf:ro
+      - ./smtp/main.cf:/etc/postfix/main.cf:rw
+      - ./smtp/master.cf:/etc/postfix/master.cf:rw
+      - ./smtp/certs:/etc/ssl/certs:ro
+      - ./smtp/certs:/etc/ssl/private:ro
+      - mail_auth:/var/spool/postfix/private
+      - postfix_config:/etc/postfix
+      - mail_data:/var/mail
+    depends_on:
+      - dovecot
+    restart: unless-stopped
+
+  dovecot:
+    build:
+      context: ./dovecot
+      dockerfile: Dockerfile
+    container_name: srv-dovecot
+    networks:
+      custom_network:
+        ipv4_address: 172.18.0.6
+    hostname: dovecot.lab.local
+    ports:
+      - "143:143"     # IMAP
+      - "993:993"     # IMAPS
+      - "110:110"     # POP3
+      - "995:995"     # POP3S
+    volumes:
+      - ./dovecot:/etc/dovecot:rw
+      - mail_auth:/var/spool/postfix/private
+      - mail_data:/var/mail
     restart: unless-stopped
 
   web:
@@ -50,7 +77,7 @@ services:
     volumes:
       - ./web:/usr/local/apache2/htdocs
     ports:
-      - "80:80"
+      - "8050:80"
     restart: unless-stopped
 
   db:
@@ -76,3 +103,8 @@ networks:
       config:
         - subnet: 172.18.0.0/16
 
+volumes:
+  mail_auth:
+  postfix_config:
+  dovecot_config:
+  mail_data:

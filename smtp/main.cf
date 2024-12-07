@@ -5,19 +5,42 @@ myorigin = $mydomain
 inet_interfaces = all
 inet_protocols = ipv4
 mydestination = localhost, localhost.$mydomain, $myhostname
-relayhost =
+relayhost = 
 
 # Configuración de red y permisos
-mynetworks = 127.0.0.0/8, 192.168.0.0/16
+mynetworks = 127.0.0.0/8, 172.18.0.0/16
 smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
-smtpd_client_restrictions = permit
+smtpd_client_restrictions = permit_mynetworks, permit_sasl_authenticated, reject
 
-# Límite de conexiones y procesos
-default_process_limit = 100
+# Límites de conexiones y rendimiento
+default_process_limit = 200
 smtpd_client_connection_rate_limit = 50
 smtpd_client_message_rate_limit = 100
+smtpd_recipient_limit = 2000
 
-# Seguridad básica
-smtpd_use_tls = no
-smtpd_sasl_auth_enable = no
+# Configuración de cola
+maximal_queue_lifetime = 2d
+bounce_queue_lifetime = 1d
+minimal_backoff_time = 300s
+maximal_backoff_time = 4000s
+queue_run_delay = 1000s
+
+# Configuración de TLS
+smtpd_use_tls = yes
+smtpd_tls_cert_file = /etc/ssl/certs/your-cert.pem
+smtpd_tls_key_file = /etc/ssl/private/your-key.pem
+smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_scache
+smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_scache
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+
+# Configuración de SASL
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+
+# Configuración adicional
+compatibility_level = 3.6
 
