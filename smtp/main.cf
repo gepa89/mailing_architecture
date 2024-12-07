@@ -1,0 +1,23 @@
+# Configuración básica
+myhostname = smtp.lab.local
+mydomain = lab.local
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+mydestination = localhost, localhost.$mydomain, $myhostname
+relayhost =
+
+# Configuración de red y permisos
+mynetworks = 127.0.0.0/8, 192.168.0.0/16
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+smtpd_client_restrictions = permit
+
+# Límite de conexiones y procesos
+default_process_limit = 100
+smtpd_client_connection_rate_limit = 50
+smtpd_client_message_rate_limit = 100
+
+# Seguridad básica
+smtpd_use_tls = no
+smtpd_sasl_auth_enable = no
+

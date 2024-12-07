@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  dns:
+    build:
+      context: ./dns
+      dockerfile: Dockerfile
+    container_name: dns_server
+    networks:
+      custom_network:
+        ipv4_address: 172.18.0.2
+    volumes:
+      - ./dns/named.conf:/etc/bind/named.conf:ro
+      - ./dns/named.conf.options:/etc/bind/named.conf.options:ro
+      - ./dns/named.conf.local:/etc/bind/named.conf.local:ro
+      - ./dns/zones:/etc/bind/zones:rw
+    ports:
+      - "1053:53/udp"
+      - "1053:53/tcp"
+    restart: unless-stopped
+
+  smtp:
+    build:
+      context: ./smtp
+      dockerfile: Dockerfile
+    container_name: srv-smtp
+    networks:
+      custom_network:
+        ipv4_address: 172.18.0.5
+    hostname: smtp.lab.local
+    environment:
+      RELAY_NETWORKS: 192.168.0.0/16
+      SMTP_USER: user
+      SMTP_PASSWORD: password
+    ports:
+      - "25:25"
+      - "587:587"
+    volumes:
+      - ./smtp/main.cf:/etc/postfix/main.cf:ro
+      - ./smtp/master.cf:/etc/postfix/master.cf:ro
+    restart: unless-stopped
+
+  web:
+    image: httpd:latest
+    container_name: web_server
+    networks:
+      custom_network:
+        ipv4_address: 172.18.0.3
+    hostname: web.lab.local
+    volumes:
+      - ./web:/usr/local/apache2/htdocs
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+  db:
+    image: mariadb:latest
+    container_name: db_server
+    networks:
+      custom_network:
+        ipv4_address: 172.18.0.4
+    hostname: db.lab.local
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+

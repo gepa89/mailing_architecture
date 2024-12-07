@@ -1,0 +1,13 @@
+options {
+    directory "/var/cache/bind";
+
+    // Permitir consultas desde cualquier cliente
+    allow-query { any; };
+
+    // Habilitar IPv4 e IPv6
+    listen-on { any; };
+    listen-on-v6 { any; };
+
+    recursion yes; // Permitir consultas recursivas (si necesario)
+};
+

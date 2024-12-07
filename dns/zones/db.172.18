@@ -1,0 +1,15 @@
+$TTL 604800
+@   IN  SOA dns.lab.local. admin.lab.local. (
+        2023120401 ; Serial
+        604800     ; Refresh
+        86400      ; Retry
+        2419200    ; Expire
+        604800 )   ; Negative Cache TTL
+;
+
+@   IN  NS  dns.lab.local.
+
+2   IN  PTR dns.lab.local.
+3   IN  PTR web.lab.local.
+5   IN  PTR smtp.lab.local.
+
