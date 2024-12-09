@@ -127,7 +127,7 @@ d. Balanceo de Carga
 
 5. Conclusión
 
-Tu infraestructura ya está bien encaminada para manejar envíos masivos. Con los ajustes mencionados (especialmente en Postfix y DNS), será capaz de manejar 10,000 correos diarios o más de manera eficiente. La clave está en:
+Encaminada para manejar envíos masivos. Con los ajustes mencionados (especialmente en Postfix y DNS), será capaz de manejar 10,000 correos diarios o más de manera eficiente. La clave está en:
 
     Autenticar los correos (SPF, DKIM, DMARC).
     Asegurar el rendimiento del servidor SMTP.
